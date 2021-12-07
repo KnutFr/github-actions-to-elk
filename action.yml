@@ -2,10 +2,30 @@ name: 'Your name here'
 description: 'Provide a description here'
 author: 'Your name or organization here'
 inputs:
-  milliseconds: # change this
+  githubToken:
     required: true
-    description: 'input description here'
-    default: 'default value if applicable'
+    description: "GitHub PAT"
+  githubOrg:
+    required: true
+    description: "The github organization to read the workflows logs from"
+  githubRepository:
+    required: true
+    description: "The github repository to read the workflows logs from"
+  githubRunId:
+    required: true
+    description: "The workflow specific run id to read the logs from"
+  elasticApiKeyId:
+    required: true
+    description: "Elastic api key id"
+  elasticApiKey:
+    required: true
+    description: "Elastic api key"
+  elasticHost:
+    required: true
+    description: "The elastic host"
+  elasticIndex:
+    required: true
+    description: "The elastic index"
 runs:
   using: 'node12'
   main: 'dist/index.js'
