@@ -80,8 +80,9 @@ function run() {
                         logs: yield (0, requests_1.sendRequestToGithub)(githubInstance, `/repos/${githubOrg}/${githubRepository}/actions/jobs/${job.id}/logs`)
                     });
                 }
-                core.info(`Sending job '${job.name}' logs to ELK`);
             }
+            core.info(`Sending job logs to ELK`);
+            core.debug(achievedJobs.toString());
             yield (0, requests_1.sendMessagesToElastic)(elasticInstance, achievedJobs, elasticIndex);
         }
         catch (e) {

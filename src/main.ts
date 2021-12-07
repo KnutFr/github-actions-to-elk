@@ -49,8 +49,9 @@ async function run(): Promise<void> {
           )
         })
       }
-      core.info(`Sending job '${job.name}' logs to ELK`)
     }
+    core.info(`Sending job logs to ELK`)
+    core.debug(achievedJobs.toString())
     await sendMessagesToElastic(elasticInstance, achievedJobs, elasticIndex)
   } catch (e) {
     if (e instanceof Error) {
