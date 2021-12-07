@@ -29,7 +29,7 @@ jobs:
           node-version: 12.x
 
       - name: Install dependencies
-        run: yarn ci
+        run: yarn
 
       - name: Rebuild the dist/ directory
         run: yarn run build
