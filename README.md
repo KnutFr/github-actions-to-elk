@@ -2,6 +2,40 @@
 # Send Github Action logs to ELK  
 
 
+# Use this action
+
+You need to set some secrets before be able to run your pipeline:  
+
+- GITHUB: Github PAT Token from https://github.com/settings/tokens
+- ELASTIC_HOST: url of your elastic instance 
+- ELASTIC_KEY_ID : generated from elastic API [see ELK Documentation](https://www.elastic.co/guide/en/elasticsearch/reference/current/security-api-create-api-key.html)
+- ELASTIC_API_KEY : generated from elastic API [see ELK Documentation](https://www.elastic.co/guide/en/elasticsearch/reference/current/security-api-create-api-key.html)
+
+
+Then add this to your workflow: 
+
+```bash
+  send-logs-to-elastic:
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Upload GitHub Action workflows logs to elastic
+        uses: knutfr/github-actions-to-elk@1.0.0
+        with:
+          githubToken: "${{ secrets.GITHUB }}"
+          githubOrg: "myOrg"
+          githubRepository: "myRepository"
+          githubRunId: "${{ github.run_id }}"
+          elasticHost: "${{ secrets.ELASTIC_HOST }}"
+          elasticApiKeyId: "${{ secrets.ELASTIC_KEY_ID }}"
+          elasticApiKey: "${{ secrets.ELASTIC_API_KEY }}"
+          elasticIndex: "github"
+
+```
+
+
+# Contributing
+
 ## Code in Main
 
 > First, you'll need to have a reasonably modern version of `node` handy. This won't work with versions older than 9, for instance.

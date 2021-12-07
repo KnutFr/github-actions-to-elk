@@ -1,6 +1,6 @@
-name: 'Your name here'
-description: 'Provide a description here'
-author: 'Your name or organization here'
+name: 'Github Logs to Elastic'
+description: 'Send Github Action logs to Elastic'
+author: 'KnutFr'
 inputs:
   githubToken:
     required: true
