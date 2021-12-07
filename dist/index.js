@@ -68,18 +68,18 @@ function run() {
             core.info(`Retrieving jobs list  from Github Pipeline ${githubRunId}`);
             const jobs = yield (0, requests_1.sendRequestToGithub)(githubInstance, jobsUrl);
             for (const job of jobs.jobs) {
-                if (job.status === 'completed') {
-                    core.info(`Parsing Job '${job.name}'`);
-                    const achievedJob = {
-                        id: job.id,
-                        name: job.name,
-                        status: job.status,
-                        conclusion: job.conclusion,
-                        steps: job.steps,
-                        logs: yield (0, requests_1.sendRequestToGithub)(githubInstance, `/repos/${githubOrg}/${githubRepository}/actions/jobs/${job.id}/logs`)
-                    };
-                    yield (0, requests_1.sendMessagesToElastic)(elasticInstance, [achievedJob], elasticIndex);
-                }
+                core.info(`Parsing Job '${job.name}'`);
+                const achievedJob = {
+                    id: job.id,
+                    name: job.name,
+                    metadata,
+                    status: job.status,
+                    conclusion: job.conclusion,
+                    steps: job.steps,
+                    details: job,
+                    logs: yield (0, requests_1.sendRequestToGithub)(githubInstance, `/repos/${githubOrg}/${githubRepository}/actions/jobs/${job.id}/logs`)
+                };
+                yield (0, requests_1.sendMessagesToElastic)(elasticInstance, [achievedJob], elasticIndex);
             }
         }
         catch (e) {
