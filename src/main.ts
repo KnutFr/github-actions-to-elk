@@ -2,7 +2,7 @@ import * as core from '@actions/core'
 import {
   createAxiosGithubInstance,
   createElasticInstance,
-  sendMessageToElastic,
+  sendMessagesToElastic,
   sendRequestToGithub
 } from './requests'
 import {loadInput} from './tool'
@@ -33,11 +33,11 @@ async function run(): Promise<void> {
     const jobsUrl = metadata.jobs_url
     core.info(`Retrieving jobs list  from Github Pipeline ${githubRunId}`)
     const jobs = await sendRequestToGithub(githubInstance, jobsUrl)
-    let achievedJob = {}
+    const achievedJobs = []
     for (const job of jobs.jobs) {
       if (job.status === 'completed') {
         core.info(`Parsing Job '${job.name}'`)
-        achievedJob = {
+        achievedJobs.push({
           id: job.id,
           name: job.name,
           status: job.status,
@@ -47,15 +47,11 @@ async function run(): Promise<void> {
             githubInstance,
             `/repos/${githubOrg}/${githubRepository}/actions/jobs/${job.id}/logs`
           )
-        }
+        })
       }
       core.info(`Sending job '${job.name}' logs to ELK`)
-      await sendMessageToElastic(
-        elasticInstance,
-        JSON.stringify(achievedJob),
-        elasticIndex
-      )
     }
+    await sendMessagesToElastic(elasticInstance, achievedJobs, elasticIndex)
   } catch (e) {
     if (e instanceof Error) {
       core.setFailed(e.message)

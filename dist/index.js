@@ -67,22 +67,22 @@ function run() {
             const jobsUrl = metadata.jobs_url;
             core.info(`Retrieving jobs list  from Github Pipeline ${githubRunId}`);
             const jobs = yield (0, requests_1.sendRequestToGithub)(githubInstance, jobsUrl);
-            let achievedJob = {};
+            const achievedJobs = [];
             for (const job of jobs.jobs) {
                 if (job.status === 'completed') {
                     core.info(`Parsing Job '${job.name}'`);
-                    achievedJob = {
+                    achievedJobs.push({
                         id: job.id,
                         name: job.name,
                         status: job.status,
                         conclusion: job.conclusion,
                         steps: job.steps,
                         logs: yield (0, requests_1.sendRequestToGithub)(githubInstance, `/repos/${githubOrg}/${githubRepository}/actions/jobs/${job.id}/logs`)
-                    };
+                    });
                 }
                 core.info(`Sending job '${job.name}' logs to ELK`);
-                yield (0, requests_1.sendMessageToElastic)(elasticInstance, JSON.stringify(achievedJob), elasticIndex);
             }
+            yield (0, requests_1.sendMessagesToElastic)(elasticInstance, achievedJobs, elasticIndex);
         }
         catch (e) {
             if (e instanceof Error) {
@@ -133,7 +133,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.createElasticInstance = exports.createAxiosGithubInstance = exports.sendMessageToElastic = exports.sendRequestToGithub = void 0;
+exports.createElasticInstance = exports.createAxiosGithubInstance = exports.sendMessagesToElastic = exports.sendRequestToGithub = void 0;
 const core = __importStar(__nccwpck_require__(2186));
 const axios_1 = __importDefault(__nccwpck_require__(6545));
 const elasticsearch_1 = __nccwpck_require__(2294);
@@ -151,18 +151,18 @@ function sendRequestToGithub(client, path) {
     });
 }
 exports.sendRequestToGithub = sendRequestToGithub;
-function sendMessageToElastic(client, message, elasticIndex) {
+function sendMessagesToElastic(client, messages, elasticIndex) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             core.debug(`Push to elasticIndex`);
-            client.index({ index: elasticIndex, type: 'document', body: message });
+            client.bulk({ body: messages, index: elasticIndex });
         }
         catch (e) {
             throw new Error(`Cannot send request to Elastic : ${e}`);
         }
     });
 }
-exports.sendMessageToElastic = sendMessageToElastic;
+exports.sendMessagesToElastic = sendMessagesToElastic;
 function createAxiosGithubInstance(token) {
     return axios_1.default.create({
         baseURL: 'https://api.github.com',
