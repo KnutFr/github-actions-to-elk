@@ -79,7 +79,7 @@ function run() {
                     details: job,
                     logs: yield (0, requests_1.sendRequestToGithub)(githubInstance, `/repos/${githubOrg}/${githubRepository}/actions/jobs/${job.id}/logs`)
                 };
-                yield (0, requests_1.sendMessagesToElastic)(elasticInstance, [achievedJob], elasticIndex);
+                yield (0, requests_1.sendMessagesToElastic)(elasticInstance, achievedJob, elasticIndex);
             }
         }
         catch (e) {
@@ -153,7 +153,7 @@ function sendMessagesToElastic(client, messages, elasticIndex) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             core.debug(`Push to elasticIndex`);
-            client.bulk({ body: messages, index: elasticIndex });
+            client.index({ body: messages, index: elasticIndex });
         }
         catch (e) {
             throw new Error(`Cannot send request to Elastic : ${e}`);

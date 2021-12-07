@@ -13,21 +13,25 @@ export async function sendRequestToGithub(client: AxiosInstance, path: string) {
   }
 }
 
+export interface ElasticMessageFormat {
+  conclusion: string
+  metadata: {}
+  name: string
+  details: {}
+  id: number
+  steps: string
+  logs: string
+  status: string
+}
+
 export async function sendMessagesToElastic(
   client: Client,
-  messages: {
-    conclusion: string
-    name: string
-    id: number
-    steps: string
-    logs: {}
-    status: string
-  }[],
+  messages: ElasticMessageFormat,
   elasticIndex: string
 ): Promise<void> {
   try {
     core.debug(`Push to elasticIndex`)
-    client.bulk({body: messages, index: elasticIndex})
+    client.index({body: messages, index: elasticIndex})
   } catch (e) {
     throw new Error(`Cannot send request to Elastic : ${e}`)
   }

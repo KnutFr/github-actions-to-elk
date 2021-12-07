@@ -1,5 +1,6 @@
 import * as core from '@actions/core'
 import {
+  ElasticMessageFormat,
   createAxiosGithubInstance,
   createElasticInstance,
   sendMessagesToElastic,
@@ -35,7 +36,7 @@ async function run(): Promise<void> {
     const jobs = await sendRequestToGithub(githubInstance, jobsUrl)
     for (const job of jobs.jobs) {
       core.info(`Parsing Job '${job.name}'`)
-      const achievedJob = {
+      const achievedJob: ElasticMessageFormat = {
         id: job.id,
         name: job.name,
         metadata,
@@ -43,13 +44,12 @@ async function run(): Promise<void> {
         conclusion: job.conclusion,
         steps: job.steps,
         details: job,
-        logs: (await sendRequestToGithub(
+        logs: await sendRequestToGithub(
           githubInstance,
           `/repos/${githubOrg}/${githubRepository}/actions/jobs/${job.id}/logs`
-        )) as string
+        )
       }
-      core.debug(achievedJob as unknown as string)
-      await sendMessagesToElastic(elasticInstance, [achievedJob], elasticIndex)
+      await sendMessagesToElastic(elasticInstance, achievedJob, elasticIndex)
     }
   } catch (e) {
     if (e instanceof Error) {
