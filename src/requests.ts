@@ -2,10 +2,8 @@ import * as core from '@actions/core'
 import Axios, {AxiosInstance} from 'axios'
 import {Client} from '@elastic/elasticsearch'
 
-export async function sendRequestToGithub(
-  client: AxiosInstance,
-  path: string
-): Promise<string> {
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+export async function sendRequestToGithub(client: AxiosInstance, path: string) {
   try {
     const response = await client.get(path)
     core.debug(response.data)

@@ -29,13 +29,11 @@ async function run(): Promise<void> {
 
     const metadataUrl = `/repos/${githubOrg}/${githubRepository}/actions/runs/${githubRunId}`
     core.info(`Retrieving metadata from Github Pipeline ${githubRunId}`)
-    const metadata = JSON.parse(
-      await sendRequestToGithub(githubInstance, metadataUrl)
-    )
+    const metadata = await sendRequestToGithub(githubInstance, metadataUrl)
     const jobsUrl = metadata.jobs_url
     const achievedJobs: Job[] = []
     core.info(`Retrieving jobs list  from Github Pipeline ${githubRunId}`)
-    const jobs = JSON.parse(await sendRequestToGithub(githubInstance, jobsUrl))
+    const jobs = await sendRequestToGithub(githubInstance, jobsUrl)
     if (!jobs.ok) {
       core.setFailed('Failed to get run jobs')
     }
