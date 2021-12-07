@@ -155,7 +155,7 @@ function sendMessageToElastic(client, message, elasticIndex) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             core.debug(`Push to elasticIndex`);
-            client.index({ index: elasticIndex, body: message });
+            client.index({ index: elasticIndex, type: 'document', body: message });
         }
         catch (e) {
             throw new Error(`Cannot send request to Elastic : ${e}`);
