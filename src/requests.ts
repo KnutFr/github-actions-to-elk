@@ -1,3 +1,4 @@
+import * as core from '@actions/core'
 import Axios, {AxiosInstance} from 'axios'
 import {Client} from '@elastic/elasticsearch'
 
@@ -7,6 +8,7 @@ export async function sendRequestToGithub(
 ): Promise<string> {
   try {
     const response = await client.get(path)
+    core.debug(response.data)
     return response.data
   } catch (e) {
     throw new Error(`Cannot send request to Github : ${e}`)
