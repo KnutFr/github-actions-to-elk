@@ -68,10 +68,7 @@ function run() {
             const achievedJobs = [];
             core.info(`Retrieving jobs list  from Github Pipeline ${githubRunId}`);
             const jobs = yield (0, requests_1.sendRequestToGithub)(githubInstance, jobsUrl);
-            if (!jobs.ok) {
-                core.setFailed('Failed to get run jobs');
-            }
-            for (const job of jobs.content.jobs) {
+            for (const job of jobs.jobs) {
                 if (job.status === 'completed') {
                     core.info(`Parsing Job '${job.name}'`);
                     achievedJobs[job.id] = {

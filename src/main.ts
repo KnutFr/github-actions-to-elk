@@ -34,10 +34,7 @@ async function run(): Promise<void> {
     const achievedJobs: Job[] = []
     core.info(`Retrieving jobs list  from Github Pipeline ${githubRunId}`)
     const jobs = await sendRequestToGithub(githubInstance, jobsUrl)
-    if (!jobs.ok) {
-      core.setFailed('Failed to get run jobs')
-    }
-    for (const job of jobs.content.jobs) {
+    for (const job of jobs.jobs) {
       if (job.status === 'completed') {
         core.info(`Parsing Job '${job.name}'`)
         achievedJobs[job.id] = {
