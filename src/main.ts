@@ -33,11 +33,10 @@ async function run(): Promise<void> {
     const jobsUrl = metadata.jobs_url
     core.info(`Retrieving jobs list  from Github Pipeline ${githubRunId}`)
     const jobs = await sendRequestToGithub(githubInstance, jobsUrl)
-    const achievedJobs = []
     for (const job of jobs.jobs) {
       if (job.status === 'completed') {
         core.info(`Parsing Job '${job.name}'`)
-        achievedJobs.push({
+        const achievedJob = {
           id: job.id,
           name: job.name,
           status: job.status,
@@ -47,12 +46,14 @@ async function run(): Promise<void> {
             githubInstance,
             `/repos/${githubOrg}/${githubRepository}/actions/jobs/${job.id}/logs`
           )
-        })
+        }
+        await sendMessagesToElastic(
+          elasticInstance,
+          [achievedJob],
+          elasticIndex
+        )
       }
     }
-    core.info(`Sending job logs to ELK`)
-    core.debug(achievedJobs.toString())
-    await sendMessagesToElastic(elasticInstance, achievedJobs, elasticIndex)
   } catch (e) {
     if (e instanceof Error) {
       core.setFailed(e.message)
