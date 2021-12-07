@@ -43,10 +43,10 @@ async function run(): Promise<void> {
         conclusion: job.conclusion,
         steps: job.steps,
         details: job,
-        logs: await sendRequestToGithub(
+        logs: (await sendRequestToGithub(
           githubInstance,
           `/repos/${githubOrg}/${githubRepository}/actions/jobs/${job.id}/logs`
-        )
+        )) as string
       }
       await sendMessagesToElastic(elasticInstance, [achievedJob], elasticIndex)
     }
