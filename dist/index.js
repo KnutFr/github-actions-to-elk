@@ -75,7 +75,7 @@ function run() {
                         status: job.status,
                         conclusion: job.conclusion,
                         steps: job.steps,
-                        logs: yield (0, requests_1.sendRequestToGithub)(githubInstance, `/repos/${githubOrg}/${githubRepository}/actions/jobs/${job.id}/logs`)
+                        logs: JSON.parse(yield (0, requests_1.sendRequestToGithub)(githubInstance, `/repos/${githubOrg}/${githubRepository}/actions/jobs/${job.id}/logs`))
                     };
                 }
                 yield (0, requests_1.sendMessageToElastic)(elasticInstance, JSON.stringify(achievedJobs[job.id]), elasticIndex);

@@ -20,7 +20,7 @@ Then add this to your workflow:
     if: always()
     steps:
       - name: Upload GitHub Action workflows logs to elastic
-        uses: knutfr/github-actions-to-elk@1.0.0
+        uses: knutfr/github-actions-to-elk@v1.0.3
         with:
           githubToken: "${{ secrets.GITHUB }}"
           githubOrg: "myOrg"

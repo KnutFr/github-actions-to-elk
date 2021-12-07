@@ -7,7 +7,6 @@ import {
   sendRequestToGithub
 } from './requests'
 
-
 async function run(): Promise<void> {
   try {
     const githubToken: string = loadInput('githubToken')
@@ -44,9 +43,11 @@ async function run(): Promise<void> {
           status: job.status,
           conclusion: job.conclusion,
           steps: job.steps,
-          logs: await sendRequestToGithub(
-            githubInstance,
-            `/repos/${githubOrg}/${githubRepository}/actions/jobs/${job.id}/logs`
+          logs: JSON.parse(
+            await sendRequestToGithub(
+              githubInstance,
+              `/repos/${githubOrg}/${githubRepository}/actions/jobs/${job.id}/logs`
+            )
           )
         }
       }
