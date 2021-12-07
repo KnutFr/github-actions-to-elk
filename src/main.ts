@@ -48,6 +48,7 @@ async function run(): Promise<void> {
           `/repos/${githubOrg}/${githubRepository}/actions/jobs/${job.id}/logs`
         )) as string
       }
+      core.debug(achievedJob as unknown as string)
       await sendMessagesToElastic(elasticInstance, [achievedJob], elasticIndex)
     }
   } catch (e) {
