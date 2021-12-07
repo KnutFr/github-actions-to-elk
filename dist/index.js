@@ -44,8 +44,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(2186));
-const tool_1 = __nccwpck_require__(8059);
 const requests_1 = __nccwpck_require__(5883);
+const tool_1 = __nccwpck_require__(8059);
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -65,13 +65,13 @@ function run() {
             core.info(`Retrieving metadata from Github Pipeline ${githubRunId}`);
             const metadata = yield (0, requests_1.sendRequestToGithub)(githubInstance, metadataUrl);
             const jobsUrl = metadata.jobs_url;
-            const achievedJobs = [];
             core.info(`Retrieving jobs list  from Github Pipeline ${githubRunId}`);
             const jobs = yield (0, requests_1.sendRequestToGithub)(githubInstance, jobsUrl);
+            let achievedJob = {};
             for (const job of jobs.jobs) {
                 if (job.status === 'completed') {
                     core.info(`Parsing Job '${job.name}'`);
-                    achievedJobs[job.id] = {
+                    achievedJob = {
                         id: job.id,
                         name: job.name,
                         status: job.status,
@@ -81,7 +81,7 @@ function run() {
                     };
                 }
                 core.info(`Sending job '${job.name}' logs to ELK`);
-                yield (0, requests_1.sendMessageToElastic)(elasticInstance, JSON.stringify(achievedJobs[job.id]), elasticIndex);
+                yield (0, requests_1.sendMessageToElastic)(elasticInstance, JSON.stringify(achievedJob), elasticIndex);
             }
         }
         catch (e) {

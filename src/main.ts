@@ -1,11 +1,11 @@
 import * as core from '@actions/core'
-import {Job, loadInput} from './tool'
 import {
   createAxiosGithubInstance,
   createElasticInstance,
   sendMessageToElastic,
   sendRequestToGithub
 } from './requests'
+import {loadInput} from './tool'
 
 async function run(): Promise<void> {
   try {
@@ -31,13 +31,13 @@ async function run(): Promise<void> {
     core.info(`Retrieving metadata from Github Pipeline ${githubRunId}`)
     const metadata = await sendRequestToGithub(githubInstance, metadataUrl)
     const jobsUrl = metadata.jobs_url
-    const achievedJobs: Job[] = []
     core.info(`Retrieving jobs list  from Github Pipeline ${githubRunId}`)
     const jobs = await sendRequestToGithub(githubInstance, jobsUrl)
+    let achievedJob = {}
     for (const job of jobs.jobs) {
       if (job.status === 'completed') {
         core.info(`Parsing Job '${job.name}'`)
-        achievedJobs[job.id] = {
+        achievedJob = {
           id: job.id,
           name: job.name,
           status: job.status,
@@ -52,7 +52,7 @@ async function run(): Promise<void> {
       core.info(`Sending job '${job.name}' logs to ELK`)
       await sendMessageToElastic(
         elasticInstance,
-        JSON.stringify(achievedJobs[job.id]),
+        JSON.stringify(achievedJob),
         elasticIndex
       )
     }
