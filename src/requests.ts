@@ -21,6 +21,7 @@ export async function sendMessageToElastic(
   elasticIndex: string
 ): Promise<void> {
   try {
+    core.debug(`Push to elasticIndex`)
     client.index({index: elasticIndex, body: message})
   } catch (e) {
     throw new Error(`Cannot send request to Elastic : ${e}`)

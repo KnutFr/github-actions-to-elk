@@ -156,6 +156,7 @@ exports.sendRequestToGithub = sendRequestToGithub;
 function sendMessageToElastic(client, message, elasticIndex) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
+            core.debug(`Push to elasticIndex`);
             client.index({ index: elasticIndex, body: message });
         }
         catch (e) {
