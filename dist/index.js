@@ -57,18 +57,23 @@ function run() {
             const elasticApiKey = (0, tool_1.loadInput)('elasticApiKey');
             const elasticHost = (0, tool_1.loadInput)('elasticHost');
             const elasticIndex = (0, tool_1.loadInput)('elasticIndex');
+            core.info(`Initializing Github Connection Instance`);
             const githubInstance = (0, requests_1.createAxiosGithubInstance)(githubToken);
+            core.info(`Initializing Elastic Instance`);
             const elasticInstance = (0, requests_1.createElasticInstance)(elasticHost, elasticApiKeyId, elasticApiKey);
             const metadataUrl = `/repos/${githubOrg}/${githubRepository}/actions/runs/${githubRunId}`;
+            core.info(`Retrieving metadata from Github Pipeline ${githubRunId}`);
             const metadata = JSON.parse(yield (0, requests_1.sendRequestToGithub)(githubInstance, metadataUrl));
             const jobsUrl = metadata.jobs_url;
             const achievedJobs = [];
+            core.info(`Retrieving jobs list  from Github Pipeline ${githubRunId}`);
             const jobs = JSON.parse(yield (0, requests_1.sendRequestToGithub)(githubInstance, jobsUrl));
             if (!jobs.ok) {
                 core.setFailed('Failed to get run jobs');
             }
             for (const job of jobs.content.jobs) {
                 if (job.status === 'completed') {
+                    core.info(`Parsing Job '${job.name}'`);
                     achievedJobs[job.id] = {
                         id: job.id,
                         name: job.name,
@@ -78,6 +83,7 @@ function run() {
                         logs: JSON.parse(yield (0, requests_1.sendRequestToGithub)(githubInstance, `/repos/${githubOrg}/${githubRepository}/actions/jobs/${job.id}/logs`))
                     };
                 }
+                core.info(`Sending job '${job.name}' logs to ELK`);
                 yield (0, requests_1.sendMessageToElastic)(elasticInstance, JSON.stringify(achievedJobs[job.id]), elasticIndex);
             }
         }

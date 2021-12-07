@@ -18,7 +18,9 @@ async function run(): Promise<void> {
     const elasticHost: string = loadInput('elasticHost')
     const elasticIndex: string = loadInput('elasticIndex')
 
+    core.info(`Initializing Github Connection Instance`)
     const githubInstance = createAxiosGithubInstance(githubToken)
+    core.info(`Initializing Elastic Instance`)
     const elasticInstance = createElasticInstance(
       elasticHost,
       elasticApiKeyId,
