@@ -63,11 +63,11 @@ function run() {
             const elasticInstance = (0, requests_1.createElasticInstance)(elasticHost, elasticApiKeyId, elasticApiKey);
             const metadataUrl = `/repos/${githubOrg}/${githubRepository}/actions/runs/${githubRunId}`;
             core.info(`Retrieving metadata from Github Pipeline ${githubRunId}`);
-            const metadata = JSON.parse(yield (0, requests_1.sendRequestToGithub)(githubInstance, metadataUrl));
+            const metadata = yield (0, requests_1.sendRequestToGithub)(githubInstance, metadataUrl);
             const jobsUrl = metadata.jobs_url;
             const achievedJobs = [];
             core.info(`Retrieving jobs list  from Github Pipeline ${githubRunId}`);
-            const jobs = JSON.parse(yield (0, requests_1.sendRequestToGithub)(githubInstance, jobsUrl));
+            const jobs = yield (0, requests_1.sendRequestToGithub)(githubInstance, jobsUrl);
             if (!jobs.ok) {
                 core.setFailed('Failed to get run jobs');
             }
@@ -140,6 +140,7 @@ exports.createElasticInstance = exports.createAxiosGithubInstance = exports.send
 const core = __importStar(__nccwpck_require__(2186));
 const axios_1 = __importDefault(__nccwpck_require__(6545));
 const elasticsearch_1 = __nccwpck_require__(2294);
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 function sendRequestToGithub(client, path) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
