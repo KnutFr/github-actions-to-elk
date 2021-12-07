@@ -80,7 +80,7 @@ function run() {
                         status: job.status,
                         conclusion: job.conclusion,
                         steps: job.steps,
-                        logs: JSON.parse(yield (0, requests_1.sendRequestToGithub)(githubInstance, `/repos/${githubOrg}/${githubRepository}/actions/jobs/${job.id}/logs`))
+                        logs: yield (0, requests_1.sendRequestToGithub)(githubInstance, `/repos/${githubOrg}/${githubRepository}/actions/jobs/${job.id}/logs`)
                     };
                 }
                 core.info(`Sending job '${job.name}' logs to ELK`);

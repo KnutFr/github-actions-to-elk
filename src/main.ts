@@ -46,11 +46,9 @@ async function run(): Promise<void> {
           status: job.status,
           conclusion: job.conclusion,
           steps: job.steps,
-          logs: JSON.parse(
-            await sendRequestToGithub(
-              githubInstance,
-              `/repos/${githubOrg}/${githubRepository}/actions/jobs/${job.id}/logs`
-            )
+          logs: await sendRequestToGithub(
+            githubInstance,
+            `/repos/${githubOrg}/${githubRepository}/actions/jobs/${job.id}/logs`
           )
         }
       }
