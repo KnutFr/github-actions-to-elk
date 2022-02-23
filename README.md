@@ -7,9 +7,18 @@
 You need to set some secrets before be able to run your pipeline:  
 
 - GITHUB: Github PAT Token from https://github.com/settings/tokens
+
+With your own elastic instance : 
+
 - ELASTIC_HOST: url of your elastic instance 
 - ELASTIC_KEY_ID : generated from elastic API [see ELK Documentation](https://www.elastic.co/guide/en/elasticsearch/reference/current/security-api-create-api-key.html)
 - ELASTIC_API_KEY : generated from elastic API [see ELK Documentation](https://www.elastic.co/guide/en/elasticsearch/reference/current/security-api-create-api-key.html)
+
+With Elastic Cloud : 
+
+- ELASTIC_CLOUD_ID : Given by Elastic Cloud
+- ELASTIC_CLOUD_USER : Create an user with full access to your given index.
+- ELASTIC_CLOUD_PASSWORD : Create an user with full access to your given index.
 
 
 Then add this to your workflow: 
@@ -29,6 +38,9 @@ Then add this to your workflow:
           elasticHost: "${{ secrets.ELASTIC_HOST }}"
           elasticApiKeyId: "${{ secrets.ELASTIC_KEY_ID }}"
           elasticApiKey: "${{ secrets.ELASTIC_API_KEY }}"
+          elasticCloudId: "${{ secrets.ELASTIC_CLOUD_ID }}"
+          elasticCloudUser: "${{ secrets.ELASTIC_CLOUD_USER }}"
+          elasticCloudPassword: "${{ secrets.ELASTIC_CLOUD_PASSWORD }}"
           elasticIndex: "github"
 
 ```

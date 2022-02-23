@@ -48,15 +48,27 @@ export function createAxiosGithubInstance(token: string): AxiosInstance {
 export function createElasticInstance(
   elasticUrl: string,
   elasticApiKeyId: string,
-  elasticApiKey: string
+  elasticApiKey: string,
+  elasticCloudId: string,
+  elasticCloudUser: string,
+  elasticCloudPassword: string
 ): Client {
-  return new Client({
-    node: elasticUrl,
-    auth: {
-      apiKey: {
-        id: elasticApiKeyId,
-        api_key: elasticApiKey
-      }
-    }
-  })
+  return elasticCloudId
+    ? new Client({
+        node: elasticUrl,
+        auth: {
+          apiKey: {
+            id: elasticApiKeyId,
+            api_key: elasticApiKey
+          }
+        }
+      })
+    : new Client({
+        node: elasticUrl,
+        cloud: {id: elasticCloudId},
+        auth: {
+          username: elasticCloudUser,
+          password: elasticCloudPassword
+        }
+      })
 }
