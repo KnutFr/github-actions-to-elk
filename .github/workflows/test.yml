@@ -11,6 +11,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: Set Node.js 17.x
+        uses: actions/setup-node@v2.5.1
+        with:
+          node-version: 17.x
       - run: |
           yarn install
       - run: |
