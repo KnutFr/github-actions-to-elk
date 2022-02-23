@@ -26,7 +26,7 @@ jobs:
       - name: Set Node.js 17.x
         uses: actions/setup-node@v2.5.1
         with:
-          node-version: 17.x
+          node-version: 17.6.0
       - uses: ./
         with:
           githubToken: "${{ secrets.GITHUB }}"
