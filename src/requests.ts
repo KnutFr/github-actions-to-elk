@@ -53,7 +53,7 @@ export function createElasticInstance(
   elasticCloudUser: string,
   elasticCloudPassword: string
 ): Client {
-  return elasticCloudId
+  return !elasticCloudId
     ? new Client({
         node: elasticUrl,
         auth: {
