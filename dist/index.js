@@ -165,7 +165,7 @@ function createAxiosGithubInstance(token) {
 }
 exports.createAxiosGithubInstance = createAxiosGithubInstance;
 function createElasticInstance(elasticUrl, elasticApiKeyId, elasticApiKey, elasticCloudId, elasticCloudUser, elasticCloudPassword) {
-    return elasticCloudId
+    return !elasticCloudId
         ? new elasticsearch_1.Client({
             node: elasticUrl,
             auth: {
