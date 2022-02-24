@@ -25,64 +25,53 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(2186));
 const requests_1 = __nccwpck_require__(5883);
 const tool_1 = __nccwpck_require__(8059);
-function run() {
-    return __awaiter(this, void 0, void 0, function* () {
-        try {
-            const githubToken = (0, tool_1.loadInput)('githubToken');
-            const githubOrg = (0, tool_1.loadInput)('githubOrg');
-            const githubRepository = (0, tool_1.loadInput)('githubRepository');
-            const githubRunId = (0, tool_1.loadInput)('githubRunId');
-            const elasticApiKeyId = (0, tool_1.loadInput)('elasticApiKeyId');
-            const elasticApiKey = (0, tool_1.loadInput)('elasticApiKey');
-            const elasticHost = (0, tool_1.loadInput)('elasticHost');
-            const elasticIndex = (0, tool_1.loadInput)('elasticIndex');
-            const elasticCloudId = (0, tool_1.loadInput)('elasticCloudId');
-            const elasticCloudUser = (0, tool_1.loadInput)('elasticCloudUser');
-            const elasticCloudPassword = (0, tool_1.loadInput)('elasticCloudPassword');
-            core.info(`Initializing Github Connection Instance`);
-            const githubInstance = (0, requests_1.createAxiosGithubInstance)(githubToken);
-            core.info(`Initializing Elastic Instance`);
-            const elasticInstance = (0, requests_1.createElasticInstance)(elasticHost, elasticApiKeyId, elasticApiKey, elasticCloudId, elasticCloudUser, elasticCloudPassword);
-            const metadataUrl = `/repos/${githubOrg}/${githubRepository}/actions/runs/${githubRunId}`;
-            core.info(`Retrieving metadata from Github Pipeline ${githubRunId}`);
-            const metadata = yield (0, requests_1.sendRequestToGithub)(githubInstance, metadataUrl);
-            const jobsUrl = metadata.jobs_url;
-            core.info(`Retrieving jobs list  from Github Pipeline ${githubRunId}`);
-            const jobs = yield (0, requests_1.sendRequestToGithub)(githubInstance, jobsUrl);
-            for (const job of jobs.jobs) {
-                core.info(`Parsing Job '${job.name}'`);
-                const achievedJob = {
-                    id: job.id,
-                    name: job.name,
-                    metadata,
-                    status: job.status,
-                    conclusion: job.conclusion,
-                    steps: job.steps,
-                    details: job,
-                    logs: yield (0, requests_1.sendRequestToGithub)(githubInstance, `/repos/${githubOrg}/${githubRepository}/actions/jobs/${job.id}/logs`)
-                };
-                yield (0, requests_1.sendMessagesToElastic)(elasticInstance, achievedJob, elasticIndex);
-            }
+async function run() {
+    try {
+        const githubToken = (0, tool_1.loadInput)('githubToken');
+        const githubOrg = (0, tool_1.loadInput)('githubOrg');
+        const githubRepository = (0, tool_1.loadInput)('githubRepository');
+        const githubRunId = (0, tool_1.loadInput)('githubRunId');
+        const elasticApiKeyId = (0, tool_1.loadInput)('elasticApiKeyId');
+        const elasticApiKey = (0, tool_1.loadInput)('elasticApiKey');
+        const elasticHost = (0, tool_1.loadInput)('elasticHost');
+        const elasticIndex = (0, tool_1.loadInput)('elasticIndex');
+        const elasticCloudId = (0, tool_1.loadInput)('elasticCloudId');
+        const elasticCloudUser = (0, tool_1.loadInput)('elasticCloudUser');
+        const elasticCloudPassword = (0, tool_1.loadInput)('elasticCloudPassword');
+        core.info(`Initializing Github Connection Instance`);
+        const githubInstance = (0, requests_1.createAxiosGithubInstance)(githubToken);
+        core.info(`Initializing Elastic Instance`);
+        const elasticInstance = (0, requests_1.createElasticInstance)(elasticHost, elasticApiKeyId, elasticApiKey, elasticCloudId, elasticCloudUser, elasticCloudPassword);
+        const metadataUrl = `/repos/${githubOrg}/${githubRepository}/actions/runs/${githubRunId}`;
+        core.info(`Retrieving metadata from Github Pipeline ${githubRunId}`);
+        const metadata = await (0, requests_1.sendRequestToGithub)(githubInstance, metadataUrl);
+        const jobsUrl = metadata.jobs_url;
+        core.info(`Retrieving jobs list  from Github Pipeline ${githubRunId}`);
+        const jobs = await (0, requests_1.sendRequestToGithub)(githubInstance, jobsUrl);
+        for (const job of jobs.jobs) {
+            core.info(`Parsing Job '${job.name}'`);
+            const achievedJob = {
+                id: job.id,
+                name: job.name,
+                metadata,
+                status: job.status,
+                conclusion: job.conclusion,
+                steps: job.steps,
+                details: job,
+                logs: await (0, requests_1.sendRequestToGithub)(githubInstance, `/repos/${githubOrg}/${githubRepository}/actions/jobs/${job.id}/logs`)
+            };
+            await (0, requests_1.sendMessagesToElastic)(elasticInstance, achievedJob, elasticIndex);
         }
-        catch (e) {
-            if (e instanceof Error) {
-                core.setFailed(e.message);
-            }
+    }
+    catch (e) {
+        if (e instanceof Error) {
+            core.setFailed(e.message);
         }
-    });
+    }
 }
 run();
 
@@ -113,15 +102,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -131,29 +111,25 @@ const core = __importStar(__nccwpck_require__(2186));
 const axios_1 = __importDefault(__nccwpck_require__(6545));
 const elasticsearch_1 = __nccwpck_require__(2294);
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-function sendRequestToGithub(client, path) {
-    return __awaiter(this, void 0, void 0, function* () {
-        try {
-            const response = yield client.get(path);
-            core.debug(response.data);
-            return response.data;
-        }
-        catch (e) {
-            throw new Error(`Cannot send request to Github : ${e}`);
-        }
-    });
+async function sendRequestToGithub(client, path) {
+    try {
+        const response = await client.get(path);
+        core.debug(response.data);
+        return response.data;
+    }
+    catch (e) {
+        throw new Error(`Cannot send request to Github : ${e}`);
+    }
 }
 exports.sendRequestToGithub = sendRequestToGithub;
-function sendMessagesToElastic(client, messages, elasticIndex) {
-    return __awaiter(this, void 0, void 0, function* () {
-        try {
-            core.debug(`Push to elasticIndex`);
-            client.index({ body: messages, index: elasticIndex });
-        }
-        catch (e) {
-            throw new Error(`Cannot send request to Elastic : ${e}`);
-        }
-    });
+async function sendMessagesToElastic(client, messages, elasticIndex) {
+    try {
+        core.debug(`Push to elasticIndex`);
+        client.index({ body: messages, index: elasticIndex });
+    }
+    catch (e) {
+        throw new Error(`Cannot send request to Elastic : ${e}`);
+    }
 }
 exports.sendMessagesToElastic = sendMessagesToElastic;
 function createAxiosGithubInstance(token) {
