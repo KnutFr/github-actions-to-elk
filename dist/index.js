@@ -57,10 +57,13 @@ function run() {
             const elasticApiKey = (0, tool_1.loadInput)('elasticApiKey');
             const elasticHost = (0, tool_1.loadInput)('elasticHost');
             const elasticIndex = (0, tool_1.loadInput)('elasticIndex');
+            const elasticCloudId = (0, tool_1.loadInput)('elasticCloudId');
+            const elasticCloudUser = (0, tool_1.loadInput)('elasticCloudUser');
+            const elasticCloudPassword = (0, tool_1.loadInput)('elasticCloudPassword');
             core.info(`Initializing Github Connection Instance`);
             const githubInstance = (0, requests_1.createAxiosGithubInstance)(githubToken);
             core.info(`Initializing Elastic Instance`);
-            const elasticInstance = (0, requests_1.createElasticInstance)(elasticHost, elasticApiKeyId, elasticApiKey);
+            const elasticInstance = (0, requests_1.createElasticInstance)(elasticHost, elasticApiKeyId, elasticApiKey, elasticCloudId, elasticCloudUser, elasticCloudPassword);
             const metadataUrl = `/repos/${githubOrg}/${githubRepository}/actions/runs/${githubRunId}`;
             core.info(`Retrieving metadata from Github Pipeline ${githubRunId}`);
             const metadata = yield (0, requests_1.sendRequestToGithub)(githubInstance, metadataUrl);
@@ -169,16 +172,25 @@ function createAxiosGithubInstance(token) {
     });
 }
 exports.createAxiosGithubInstance = createAxiosGithubInstance;
-function createElasticInstance(elasticUrl, elasticApiKeyId, elasticApiKey) {
-    return new elasticsearch_1.Client({
-        node: elasticUrl,
-        auth: {
-            apiKey: {
-                id: elasticApiKeyId,
-                api_key: elasticApiKey
+function createElasticInstance(elasticUrl, elasticApiKeyId, elasticApiKey, elasticCloudId, elasticCloudUser, elasticCloudPassword) {
+    return !elasticCloudId
+        ? new elasticsearch_1.Client({
+            node: elasticUrl,
+            auth: {
+                apiKey: {
+                    id: elasticApiKeyId,
+                    api_key: elasticApiKey
+                }
             }
-        }
-    });
+        })
+        : new elasticsearch_1.Client({
+            node: elasticUrl,
+            cloud: { id: elasticCloudId },
+            auth: {
+                username: elasticCloudUser,
+                password: elasticCloudPassword
+            }
+        });
 }
 exports.createElasticInstance = createElasticInstance;
 

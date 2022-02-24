@@ -18,6 +18,9 @@ async function run(): Promise<void> {
     const elasticApiKey: string = loadInput('elasticApiKey')
     const elasticHost: string = loadInput('elasticHost')
     const elasticIndex: string = loadInput('elasticIndex')
+    const elasticCloudId: string = loadInput('elasticCloudId')
+    const elasticCloudUser: string = loadInput('elasticCloudUser')
+    const elasticCloudPassword: string = loadInput('elasticCloudPassword')
 
     core.info(`Initializing Github Connection Instance`)
     const githubInstance = createAxiosGithubInstance(githubToken)
@@ -25,7 +28,10 @@ async function run(): Promise<void> {
     const elasticInstance = createElasticInstance(
       elasticHost,
       elasticApiKeyId,
-      elasticApiKey
+      elasticApiKey,
+      elasticCloudId,
+      elasticCloudUser,
+      elasticCloudPassword
     )
 
     const metadataUrl = `/repos/${githubOrg}/${githubRepository}/actions/runs/${githubRunId}`

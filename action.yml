@@ -18,16 +18,25 @@ inputs:
     required: true
     description: "The workflow specific run id to read the logs from"
   elasticApiKeyId:
-    required: true
+    required: false
     description: "Elastic api key id"
   elasticApiKey:
-    required: true
+    required: false
     description: "Elastic api key"
   elasticHost:
     required: true
     description: "The elastic host"
   elasticIndex:
     required: true
+    description: "The elastic index"
+  elasticCloudId:
+    required: false
+    description: "The elastic index"
+  elasticCloudUser:
+    required: false
+    description: "The elastic index"
+  elasticCloudPassword:
+    required: false
     description: "The elastic index"
 runs:
   using: 'node12'
